@@ -1,16 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Security.AccessControl;
-using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Yahoo.Yui.Compressor;
+using WinUglifier.Compressor;
 
 namespace WinUglifier
 {
@@ -23,67 +15,126 @@ namespace WinUglifier
 
         private void Main_Load(object sender, EventArgs e)
         {
-            
+            rdoOverwrite.Checked = true;
+            rdoRename.Enabled = false;
+
+            comboAlgorithms.Items.Add("YUI Compressor");
+            comboAlgorithms.SelectedIndex = 0;
         }
 
         private void btnUglify_Click(object sender, EventArgs e)
         {
-            //JavaScriptCompressor javascript = new JavaScriptCompressor();
-
-            foreach (ListViewItem item in listFiles.CheckedItems)
+            if (comboAlgorithms.SelectedIndex == 0)
             {
-                System.Console.Out.WriteLine(item.SubItems[1]);
+                Compression(treeItems.Nodes);
+            }
+
+        }
+
+        private void Compression(TreeNodeCollection nodes)
+        {
+            for (int i = nodes.Count - 1; i >= 0; --i)
+            {
+                Compression(nodes[i].Nodes);
+
+                if (nodes[i].Nodes.Count == 0)
+                {
+                    string result = string.Empty;
+                    string fileName = ((WinUglifier.TreeView.TreeNode)nodes[i]).Value;
+                    if (string.IsNullOrEmpty(fileName)) { continue; }
+
+                    ICompressor compressor = Compressor.CompressorFactory.GetCompressor(
+                        comboAlgorithms.SelectedItem.ToString(),
+                        Compressor.CompressorFactory.GetCompressorType(fileName)
+                        );
+
+                    using (StreamReader reader = new StreamReader(fileName))
+                    {
+                        result = compressor.Compress(reader.ReadToEnd());
+                    }
+
+                    if (!string.IsNullOrEmpty(result))
+                    {
+                        using (StreamWriter writer = new StreamWriter(((WinUglifier.TreeView.TreeNode)nodes[i]).Value))
+                        {
+                            writer.Write(result);
+                        }
+                    }
+                }
+
+                nodes[i].Remove();
             }
         }
 
-        private ListViewItem GetItem(string item)
+        private bool IsAddableType(string item)
         {
-            ListViewItem lv = new ListViewItem();
-            lv.SubItems.Add(Path.GetDirectoryName(item));
-            lv.SubItems.Add(Path.GetFileName(item));
+            string css = chkCSS.Checked ? "css" : string.Empty;
+            string js = chkJavascript.Checked ? "js" : string.Empty;
 
-            return lv;
+            string pattern = ".*([^\\.][^m][^i][^n])\\.(" + string.Join("|", new string[] { css, js }) + ")$";
+            return System.Text.RegularExpressions.Regex.IsMatch(item, pattern);
         }
 
-        private void GetFiles(string[] items)
+        private void GetTreeNode(ref WinUglifier.TreeView.TreeNode root, string[] items)
         {
-            string pattern = ".*\\.(css|js)$";
-            foreach (string path in items)
+            foreach (string item in items)
             {
-                if (Directory.Exists(path))
+                if (Directory.Exists(item)) // is directory ?
                 {
-                    foreach (string file in Directory.GetFiles(path))
+                    WinUglifier.TreeView.TreeNode node = new WinUglifier.TreeView.TreeNode(null, Path.GetFileName(item));
+
+                    string[] files = Directory.GetFiles(item);
+                    if (files.Length > 0) // has files?
                     {
-                        if (System.Text.RegularExpressions.Regex.IsMatch(file, pattern))
-                        {
-                            listFiles.Items.Add(GetItem(file));
-                        }
+                        GetTreeNode(ref node, files);
                     }
-                    
-                    GetFiles(Directory.GetDirectories(path));
+
+                    foreach (string dir in Directory.GetDirectories(item))
+                    {
+                        GetTreeNode(ref node, new string[] { dir });
+                    }
+
+                    if (node.Value != null || (node.Value == null && node.Nodes.Count > 0))
+                    {
+                        root.Nodes.Add(node);
+                    }
                 }
                 else
                 {
-                    if (System.Text.RegularExpressions.Regex.IsMatch(path, pattern))
+                    string name = Path.GetFileName(item);
+                    if (IsAddableType(name))
                     {
-                        listFiles.Items.Add(GetItem(path));
+                        WinUglifier.TreeView.TreeNode node = new WinUglifier.TreeView.TreeNode(item, name);
+
+                        root.Nodes.Add(node);
                     }
                 }
             }
         }
 
-        private void listFiles_DragDrop(object sender, DragEventArgs e)
+        private async void treeItems_DragDrop(object sender, DragEventArgs e)
         {
             string[] items = (string[])e.Data.GetData(DataFormats.FileDrop, false);
 
-            GetFiles(items);
+            WinUglifier.TreeView.TreeNode root = new WinUglifier.TreeView.TreeNode();
+
+            GetTreeNode(ref root, items);
+
+            List<TreeNode> nodes = new List<TreeNode>();
+            foreach (TreeNode node in root.Nodes)
+            {
+                nodes.Add(node);
+            }
+
+            treeItems.Nodes.AddRange(nodes.ToArray());
+            treeItems.ExpandAll();
         }
 
-        private void listFiles_DragEnter(object sender, DragEventArgs e)
+        private void treeItems_DragEnter(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop, false))
             {
-                e.Effect = DragDropEffects.All;
+                e.Effect = DragDropEffects.Copy;
             }
             else
             {
@@ -91,20 +142,13 @@ namespace WinUglifier
             }
         }
 
-        private void listFiles_KeyDown(object sender, KeyEventArgs e)
+        private void treeItems_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Control && e.KeyCode == Keys.A)
+            if (e.KeyCode == Keys.Delete)
             {
-                for (int i = 0; i < listFiles.Items.Count; ++i)
+                if (treeItems.SelectedNode != null)
                 {
-                    //listFiles.SetSelected(i, true);
-                }
-            }
-            else if (e.KeyCode == Keys.Delete)
-            {
-                for (int i = listFiles.SelectedItems.Count - 1; i >= 0; --i)
-                {
-                    listFiles.Items.Remove(listFiles.SelectedItems[i]);
+                    treeItems.SelectedNode.Remove();
                 }
             }
         }
