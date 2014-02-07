@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows.Forms;
-using WinUglifier.Compressor;
+using WinUglifier.Plugin;
 
 namespace WinUglifier
 {
     public partial class Main : Form
     {
+        private Dictionary<string, PluginInfo> pluginInfo;
+
         public Main()
         {
             InitializeComponent();
@@ -15,11 +18,34 @@ namespace WinUglifier
 
         private void Main_Load(object sender, EventArgs e)
         {
+            pluginInfo = new Dictionary<string, PluginInfo>();
+            Collection<PluginInfo> plugins = PluginInfo.LoadAll();
+            if (plugins.Count == 0)
+            {
+                OpenFileDialog file = new OpenFileDialog();
+                DialogResult result = file.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    PluginInfo info = new PluginInfo(file.FileName);
+                    info.Save();
+                }
+
+                plugins = PluginInfo.LoadAll();
+            }
+
+            foreach (PluginInfo plugin in plugins)
+            {
+                pluginInfo.Add(plugin.Name, plugin);
+                comboAlgorithms.Items.Add(plugin.Name);
+            }
+
+            comboAlgorithms.SelectedIndex = 0;
+            
             rdoOverwrite.Checked = true;
             rdoRename.Enabled = false;
 
-            comboAlgorithms.Items.Add("YUI Compressor");
-            comboAlgorithms.SelectedIndex = 0;
+            chkCSS.Checked = false;
+            chkCSS.Enabled = false;
         }
 
         private void btnUglify_Click(object sender, EventArgs e)
@@ -43,14 +69,10 @@ namespace WinUglifier
                     string fileName = ((WinUglifier.TreeView.TreeNode)nodes[i]).Value;
                     if (string.IsNullOrEmpty(fileName)) { continue; }
 
-                    ICompressor compressor = Compressor.CompressorFactory.GetCompressor(
-                        comboAlgorithms.SelectedItem.ToString(),
-                        Compressor.CompressorFactory.GetCompressorType(fileName)
-                        );
-
                     using (StreamReader reader = new StreamReader(fileName))
                     {
-                        result = compressor.Compress(reader.ReadToEnd());
+                        PluginInfo plugin = (PluginInfo)pluginInfo[comboAlgorithms.SelectedItem.ToString()];
+                        result = (string)plugin.CreateInstance().Execute(reader.ReadToEnd());
                     }
 
                     if (!string.IsNullOrEmpty(result))
@@ -112,7 +134,7 @@ namespace WinUglifier
             }
         }
 
-        private async void treeItems_DragDrop(object sender, DragEventArgs e)
+        private void treeItems_DragDrop(object sender, DragEventArgs e)
         {
             string[] items = (string[])e.Data.GetData(DataFormats.FileDrop, false);
 

@@ -34,13 +34,13 @@
             this.chkCSS = new System.Windows.Forms.CheckBox();
             this.comboAlgorithms = new System.Windows.Forms.ComboBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.chkJavascript = new System.Windows.Forms.CheckBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.rdoOverwrite = new System.Windows.Forms.RadioButton();
             this.rdoRename = new System.Windows.Forms.RadioButton();
+            this.rdoOverwrite = new System.Windows.Forms.RadioButton();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.chkJavascript = new System.Windows.Forms.CheckBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -105,24 +105,45 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Options";
             // 
-            // groupBox2
+            // rdoRename
             // 
-            this.groupBox2.Controls.Add(this.treeItems);
-            this.groupBox2.Location = new System.Drawing.Point(12, 12);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(531, 268);
-            this.groupBox2.TabIndex = 10;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Drag && Drop Files or Directories";
+            this.rdoRename.AutoSize = true;
+            this.rdoRename.Checked = true;
+            this.rdoRename.Location = new System.Drawing.Point(173, 72);
+            this.rdoRename.Name = "rdoRename";
+            this.rdoRename.Size = new System.Drawing.Size(70, 16);
+            this.rdoRename.TabIndex = 13;
+            this.rdoRename.TabStop = true;
+            this.rdoRename.Text = "Rename";
+            this.rdoRename.UseVisualStyleBackColor = true;
             // 
-            // label1
+            // rdoOverwrite
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 20);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(65, 12);
-            this.label1.TabIndex = 9;
-            this.label1.Text = "Algorithms";
+            this.rdoOverwrite.AutoSize = true;
+            this.rdoOverwrite.Location = new System.Drawing.Point(89, 72);
+            this.rdoOverwrite.Name = "rdoOverwrite";
+            this.rdoOverwrite.Size = new System.Drawing.Size(76, 16);
+            this.rdoOverwrite.TabIndex = 13;
+            this.rdoOverwrite.Text = "Overwrite";
+            this.rdoOverwrite.UseVisualStyleBackColor = true;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 74);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(41, 12);
+            this.label3.TabIndex = 12;
+            this.label3.Text = "Output";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 47);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(44, 12);
+            this.label2.TabIndex = 11;
+            this.label2.Text = "Modes";
             // 
             // chkJavascript
             // 
@@ -136,45 +157,24 @@
             this.chkJavascript.Text = "Javascript";
             this.chkJavascript.UseVisualStyleBackColor = true;
             // 
-            // label2
+            // label1
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 47);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(44, 12);
-            this.label2.TabIndex = 11;
-            this.label2.Text = "Modes";
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 20);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(65, 12);
+            this.label1.TabIndex = 9;
+            this.label1.Text = "Algorithms";
             // 
-            // label3
+            // groupBox2
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 74);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(41, 12);
-            this.label3.TabIndex = 12;
-            this.label3.Text = "Output";
-            // 
-            // rdoOverwrite
-            // 
-            this.rdoOverwrite.AutoSize = true;
-            this.rdoOverwrite.Location = new System.Drawing.Point(89, 72);
-            this.rdoOverwrite.Name = "rdoOverwrite";
-            this.rdoOverwrite.Size = new System.Drawing.Size(76, 16);
-            this.rdoOverwrite.TabIndex = 13;
-            this.rdoOverwrite.Text = "Overwrite";
-            this.rdoOverwrite.UseVisualStyleBackColor = true;
-            // 
-            // rdoRename
-            // 
-            this.rdoRename.AutoSize = true;
-            this.rdoRename.Checked = true;
-            this.rdoRename.Location = new System.Drawing.Point(173, 72);
-            this.rdoRename.Name = "rdoRename";
-            this.rdoRename.Size = new System.Drawing.Size(70, 16);
-            this.rdoRename.TabIndex = 13;
-            this.rdoRename.TabStop = true;
-            this.rdoRename.Text = "Rename";
-            this.rdoRename.UseVisualStyleBackColor = true;
+            this.groupBox2.Controls.Add(this.treeItems);
+            this.groupBox2.Location = new System.Drawing.Point(12, 12);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(531, 268);
+            this.groupBox2.TabIndex = 10;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Drag && Drop Files or Directories";
             // 
             // Main
             // 
@@ -184,7 +184,6 @@
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnUglify);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "Main";
             this.Text = "WinUglifier";
             this.Load += new System.EventHandler(this.Main_Load);
