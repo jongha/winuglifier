@@ -55,6 +55,7 @@
     <Compile Include="Plugin\Serializer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TreeView\ShellIcon.cs" />
     <Compile Include="TreeView\TreeNode.cs" />
     <EmbeddedResource Include="Main.resx">
       <DependentUpon>Main.cs</DependentUpon>
