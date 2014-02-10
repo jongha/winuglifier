@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using WinUglifier.Plugin;
+using WinUglifier.TreeView;
 
 namespace WinUglifier
 {
@@ -38,6 +40,8 @@ namespace WinUglifier
                 pluginInfo.Add(plugin.Name, plugin);
                 comboAlgorithms.Items.Add(plugin.Name);
             }
+
+            treeItems.ImageList = new ImageList();
 
             comboAlgorithms.SelectedIndex = 0;
             
@@ -97,6 +101,13 @@ namespace WinUglifier
             return System.Text.RegularExpressions.Regex.IsMatch(item, pattern);
         }
 
+        private void SetNodeImage(string item, ref WinUglifier.TreeView.TreeNode node)
+        {
+            treeItems.ImageList.Images.Add(ShellIcon.GetSmallIcon(item).ToBitmap(), Color.Empty);
+            node.ImageIndex = treeItems.ImageList.Images.Count - 1;
+            node.SelectedImageIndex = treeItems.ImageList.Images.Count - 1;
+        }
+
         private void GetTreeNode(ref WinUglifier.TreeView.TreeNode root, string[] items)
         {
             foreach (string item in items)
@@ -104,6 +115,8 @@ namespace WinUglifier
                 if (Directory.Exists(item)) // is directory ?
                 {
                     WinUglifier.TreeView.TreeNode node = new WinUglifier.TreeView.TreeNode(null, Path.GetFileName(item));
+
+                    SetNodeImage(item, ref node);
 
                     string[] files = Directory.GetFiles(item);
                     if (files.Length > 0) // has files?
@@ -128,6 +141,8 @@ namespace WinUglifier
                     {
                         WinUglifier.TreeView.TreeNode node = new WinUglifier.TreeView.TreeNode(item, name);
 
+                        SetNodeImage(item, ref node);
+
                         root.Nodes.Add(node);
                     }
                 }
@@ -142,8 +157,8 @@ namespace WinUglifier
 
             GetTreeNode(ref root, items);
 
-            List<TreeNode> nodes = new List<TreeNode>();
-            foreach (TreeNode node in root.Nodes)
+            List<WinUglifier.TreeView.TreeNode> nodes = new List<WinUglifier.TreeView.TreeNode>();
+            foreach (WinUglifier.TreeView.TreeNode node in root.Nodes)
             {
                 nodes.Add(node);
             }
