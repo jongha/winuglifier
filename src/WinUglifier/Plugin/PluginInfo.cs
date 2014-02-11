@@ -55,6 +55,14 @@ namespace WinUglifier.Plugin
             set { _Name = value; }
         }
 
+        private int _Type;
+        [XmlElement("Type")]
+        public int Type
+        {
+            get { return _Type; }
+            set { _Type = value; }
+        }
+
         private Icon _Icon;
         [XmlIgnore]
         public Icon Icon
@@ -96,7 +104,7 @@ namespace WinUglifier.Plugin
                 if (plugin != null)
                 {
                     Name = plugin.Name;
-
+                    Type = (int)plugin.Type;
                     plugin.Dispose();
                 }
             }
