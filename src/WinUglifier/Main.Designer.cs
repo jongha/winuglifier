@@ -34,13 +34,14 @@
             this.chkCSS = new System.Windows.Forms.CheckBox();
             this.comboAlgorithms = new System.Windows.Forms.ComboBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.rdoRename = new System.Windows.Forms.RadioButton();
+            this.rdoPostfix = new System.Windows.Forms.RadioButton();
             this.rdoOverwrite = new System.Windows.Forms.RadioButton();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.chkJavascript = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.txtPostfix = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -90,7 +91,8 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.rdoRename);
+            this.groupBox1.Controls.Add(this.txtPostfix);
+            this.groupBox1.Controls.Add(this.rdoPostfix);
             this.groupBox1.Controls.Add(this.rdoOverwrite);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.label2);
@@ -105,17 +107,18 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Options";
             // 
-            // rdoRename
+            // rdoPostfix
             // 
-            this.rdoRename.AutoSize = true;
-            this.rdoRename.Checked = true;
-            this.rdoRename.Location = new System.Drawing.Point(173, 72);
-            this.rdoRename.Name = "rdoRename";
-            this.rdoRename.Size = new System.Drawing.Size(70, 16);
-            this.rdoRename.TabIndex = 13;
-            this.rdoRename.TabStop = true;
-            this.rdoRename.Text = "Rename";
-            this.rdoRename.UseVisualStyleBackColor = true;
+            this.rdoPostfix.AutoSize = true;
+            this.rdoPostfix.Checked = true;
+            this.rdoPostfix.Location = new System.Drawing.Point(173, 72);
+            this.rdoPostfix.Name = "rdoPostfix";
+            this.rdoPostfix.Size = new System.Drawing.Size(61, 16);
+            this.rdoPostfix.TabIndex = 13;
+            this.rdoPostfix.TabStop = true;
+            this.rdoPostfix.Text = "Postfix";
+            this.rdoPostfix.UseVisualStyleBackColor = true;
+            this.rdoPostfix.CheckedChanged += new System.EventHandler(this.rdoPostfix_CheckedChanged);
             // 
             // rdoOverwrite
             // 
@@ -126,6 +129,7 @@
             this.rdoOverwrite.TabIndex = 13;
             this.rdoOverwrite.Text = "Overwrite";
             this.rdoOverwrite.UseVisualStyleBackColor = true;
+            this.rdoOverwrite.CheckedChanged += new System.EventHandler(this.rdoOverwrite_CheckedChanged);
             // 
             // label3
             // 
@@ -176,6 +180,14 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Drag && Drop Files or Directories";
             // 
+            // txtPostfix
+            // 
+            this.txtPostfix.Location = new System.Drawing.Point(240, 71);
+            this.txtPostfix.Name = "txtPostfix";
+            this.txtPostfix.Size = new System.Drawing.Size(50, 21);
+            this.txtPostfix.TabIndex = 14;
+            this.txtPostfix.Text = ".min";
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -207,8 +219,9 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.CheckBox chkJavascript;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.RadioButton rdoRename;
+        private System.Windows.Forms.RadioButton rdoPostfix;
         private System.Windows.Forms.RadioButton rdoOverwrite;
+        private System.Windows.Forms.TextBox txtPostfix;
     }
 }
 

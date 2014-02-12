@@ -11,7 +11,7 @@ namespace WinUglifier
 {
     public partial class Main : Form
     {
-        private Dictionary<string, PluginInfo> pluginInfo;
+        private Dictionary<PluginType, PluginInfo> pluginInfo;
 
         public Main()
         {
@@ -20,9 +20,9 @@ namespace WinUglifier
 
         private void Main_Load(object sender, EventArgs e)
         {
-            pluginInfo = new Dictionary<string, PluginInfo>();
-            Collection<PluginInfo> plugins = PluginInfo.LoadAll();
-            if (plugins.Count == 0)
+            pluginInfo = new Dictionary<PluginType, PluginInfo>();
+            
+            while (PluginInfo.LoadAll().Count < 2)
             {
                 OpenFileDialog file = new OpenFileDialog();
                 DialogResult result = file.ShowDialog();
@@ -31,25 +31,22 @@ namespace WinUglifier
                     PluginInfo info = new PluginInfo(file.FileName);
                     info.Save();
                 }
-
-                plugins = PluginInfo.LoadAll();
             }
+
+
+            Collection<PluginInfo> plugins = PluginInfo.LoadAll();
 
             foreach (PluginInfo plugin in plugins)
             {
-                pluginInfo.Add(plugin.Name, plugin);
+                pluginInfo.Add((PluginType)plugin.Type, plugin);
                 comboAlgorithms.Items.Add(plugin.Name);
             }
+
 
             treeItems.ImageList = new ImageList();
 
             comboAlgorithms.SelectedIndex = 0;
-            
             rdoOverwrite.Checked = true;
-            rdoRename.Enabled = false;
-
-            chkCSS.Checked = false;
-            chkCSS.Enabled = false;
         }
 
         private void btnUglify_Click(object sender, EventArgs e)
@@ -75,14 +72,22 @@ namespace WinUglifier
 
                     using (StreamReader reader = new StreamReader(fileName))
                     {
-                        PluginInfo plugin = (PluginInfo)pluginInfo[comboAlgorithms.SelectedItem.ToString()];
-                        result = (string)plugin.CreateInstance().Execute(reader.ReadToEnd());
+                        result = (string)pluginInfo[GetPluginTypeByFilename(fileName)].CreateInstance().Execute(reader.ReadToEnd());
                     }
 
                     if (!string.IsNullOrEmpty(result))
                     {
-                        using (StreamWriter writer = new StreamWriter(((WinUglifier.TreeView.TreeNode)nodes[i]).Value))
+                        string outputFileName = ((WinUglifier.TreeView.TreeNode)nodes[i]).Value;
+                        if (rdoPostfix.Checked)
                         {
+                            outputFileName = Path.Combine(
+                                Path.GetDirectoryName(outputFileName), 
+                                Path.GetFileNameWithoutExtension(outputFileName) + txtPostfix.Text.Trim() + Path.GetExtension(outputFileName)
+                                );
+                        }
+
+                        using (StreamWriter writer = new StreamWriter(outputFileName))
+                        { 
                             writer.Write(result);
                         }
                     }
@@ -92,12 +97,24 @@ namespace WinUglifier
             }
         }
 
+        private PluginType GetPluginTypeByFilename(string fileName)
+        {
+            switch (Path.GetExtension(fileName).ToLower())
+            {
+                case ".css":
+                    return PluginType.CSS;
+                case ".js":
+                    return PluginType.JS;
+            }
+
+            return PluginType.None;
+        }
         private bool IsAddableType(string item)
         {
             string css = chkCSS.Checked ? "css" : string.Empty;
             string js = chkJavascript.Checked ? "js" : string.Empty;
 
-            string pattern = ".*([^\\.][^m][^i][^n])\\.(" + string.Join("|", new string[] { css, js }) + ")$";
+            string pattern = ".*([^m][^i][^n])\\.(" + string.Join("|", new string[] { css, js }) + ")$";
             return System.Text.RegularExpressions.Regex.IsMatch(item, pattern);
         }
 
@@ -188,6 +205,17 @@ namespace WinUglifier
                     treeItems.SelectedNode.Remove();
                 }
             }
+        }
+
+        private void rdoPostfix_CheckedChanged(object sender, EventArgs e)
+        {
+            txtPostfix.Enabled = true;
+            txtPostfix.Focus();
+        }
+
+        private void rdoOverwrite_CheckedChanged(object sender, EventArgs e)
+        {
+            txtPostfix.Enabled = false;
         }
     }
 }

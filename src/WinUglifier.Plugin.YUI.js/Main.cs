@@ -9,16 +9,17 @@ namespace WinUglifier.Plugin.YUI.js
 {
     public class Main : Plugin
     {
+        private static PluginType type = PluginType.JS;
         private static string name = "YUI Compression JS";
 
-        public Main() : base(name)
+        public Main()
+            : base(type, name)
         {
         }
 
         public override object Execute(object input)
         {
-            Yahoo.Yui.Compressor.JavaScriptCompressor compressor = new Yahoo.Yui.Compressor.JavaScriptCompressor();
-            return compressor.Compress((string)input);
+            return new Yahoo.Yui.Compressor.JavaScriptCompressor().Compress((string)input);
         }
     }
 }
